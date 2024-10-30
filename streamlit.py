@@ -12,14 +12,14 @@ load_dotenv()
 # Set API keys
 openai.api_key = os.getenv('OPENAI_API_KEY')
 pinecone_api_key = os.getenv('PINECONE_API_KEY')
-pinecone_environment = os.getenv('PINECONE_ENVIRONMENT')
+pinecone_index_name = os.getenv('PINECONE_INDEX_NAME', 'research-papers-v1')
 
 # Initialize Pinecone
-index_name = 'research-papers-v1'  # Replace with your index name
 pc = Pinecone(
     api_key=pinecone_api_key
 )
-index = pc.Index(index_name)
+index = pc.Index(pinecone_index_name)
+
 
 # Set up Streamlit app
 st.set_page_config(page_title="Arxiv Assistant", page_icon="📚")
@@ -71,6 +71,7 @@ def generate_response(query, chat_history):
         for p in papers
     ])
     
+    
     # Construct the system prompt
     system_prompt = f"""
 You are a helpful assistant specialized in providing information based on research papers.
@@ -104,6 +105,7 @@ Research Papers:
 for message in st.session_state['messages']:
     with st.chat_message(message['role']):
         st.markdown(message['content'])
+        
 
 # Accept user input using st.chat_input
 if user_query := st.chat_input("Ask a question about research papers"):
@@ -129,4 +131,4 @@ if user_query := st.chat_input("Ask a question about research papers"):
 # Optional: clear chat history button
 if st.button("Clear Chat"):
     st.session_state['messages'] = []
-    st.experimental_rerun()
+    st.rerun()
