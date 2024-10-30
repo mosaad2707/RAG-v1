@@ -4,6 +4,7 @@ import pandas as pd
 import openai
 from pinecone import Pinecone, ServerlessSpec
 import os
+from os import path
 from tqdm import tqdm
 from dotenv import load_dotenv
 
@@ -13,14 +14,13 @@ load_dotenv()
 # Set API keys
 openai.api_key = os.getenv('OPENAI_API_KEY')
 pinecone_api_key = os.getenv('PINECONE_API_KEY')
-pinecone_environment = os.getenv('PINECONE_ENVIRONMENT')
+pinecone_index_name = os.getenv('PINECONE_INDEX_NAME', 'research-papers-v1')
 
 pc = Pinecone(
         api_key=pinecone_api_key
     )
 
 # Define the name of your index
-index_name = 'research-papers-v1'
 
 def get_embedding(text, model="text-embedding-ada-002"):
     """Generate an embedding for a given text using OpenAI's API."""
@@ -32,7 +32,8 @@ def get_embedding(text, model="text-embedding-ada-002"):
 
 def main():
     # Load the Excel file
-    df = pd.read_excel('/Users/saad/RAG-v1/arxiv_papers_abstract_nlp.xlsx')
+    # df = pd.read_excel('/Users/saad/RAG-v1/arxiv_papers_abstract_nlp.xlsx')
+    df = pd.read_excel(path.join(path.dirname(__file__), 'dataset', 'arxiv_papers_abstract_nlp.xlsx'))
 
     # Ensure the DataFrame has the correct columns
     required_columns = {'Title', 'Abstract', 'Authors'}
@@ -54,7 +55,7 @@ def main():
     df['Embedding'] = embeddings
 
     # Create a Pinecone index if it doesn't exist
-    if index_name not in pc.list_indexes().names():
+    if pinecone_index_name not in pc.list_indexes().names():
         pc.create_index(
             name='research-papers-v1', 
             dimension=1536, 
@@ -66,7 +67,7 @@ def main():
         )
 
     # Connect to the index
-    index = pc.Index(index_name)
+    index = pc.Index(pinecone_index_name)
 
     # Prepare data for upsert
     print("Preparing data for upsert...")
