@@ -4,6 +4,7 @@ import pandas as pd
 import openai
 from pinecone import Pinecone, ServerlessSpec
 import os
+from os import path
 from tqdm import tqdm
 from dotenv import load_dotenv
 
@@ -32,7 +33,8 @@ def get_embedding(text, model="text-embedding-ada-002"):
 
 def main():
     # Load the Excel file
-    df = pd.read_excel('/Users/saad/RAG-v1/arxiv_papers_abstract_nlp.xlsx')
+    # df = pd.read_excel('/Users/saad/RAG-v1/arxiv_papers_abstract_nlp.xlsx')
+    df = pd.read_excel(path.join(path.dirname(__file__), 'dataset', 'arxiv_papers_abstract_nlp.xlsx'))
 
     # Ensure the DataFrame has the correct columns
     required_columns = {'Title', 'Abstract', 'Authors'}
