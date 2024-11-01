@@ -1,4 +1,4 @@
-import main as st
+import streamlit as st
 import openai
 from pinecone import Pinecone, ServerlessSpec
 import os
