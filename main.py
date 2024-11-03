@@ -76,8 +76,7 @@ def generate_response(query, chat_history):
     system_prompt = f"""
 You are a helpful assistant specialized in providing information based on research papers.
 
-Based on the following research papers, provide an answer to the user's query.
-
+Based on the following research papers, provide an answer to the user's query. Make sure to reference the sources you use and if you cannot answer using the research papers then mention it . Don't make up answers by yourself.
 Research Papers:
 {paper_summaries}
 """
